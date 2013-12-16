@@ -10,11 +10,6 @@
 #include <pwd.h>
 
 #define USER "www-data"
-#define PORT 443
-
-#ifndef static_assert
-# define static_assert(expr, foo) do { char x[(expr) ? 0 : -1]; } while (0);
-#endif
 
 int main(int argc, char *argv[]) {
     int fd, r;
@@ -29,9 +24,6 @@ int main(int argc, char *argv[]) {
     pid_t ppid;
     struct stat st;
     struct passwd *pw;
-
-    static_assert(PORT < 1024, "Allowing local port to be >= 1024 allows non-root"
-                               "programs to spawn sshd thorugh this suid helper");
 
     errno = 0;
     pw = getpwnam(USER);
@@ -62,13 +54,7 @@ int main(int argc, char *argv[]) {
 
     switch (local.sa.sa_family) {
     case AF_INET:
-        if (local.in.sin_port != PORT)
-            goto fail;
-        break;
     case AF_INET6:
-        if (local.in6.sin6_port != PORT)
-            goto fail;
-        break;
     case AF_UNIX:
         break;
     default:
