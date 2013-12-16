@@ -33,13 +33,6 @@ int main(int argc, char *argv[]) {
     if (pw->pw_uid != getuid())
         goto fail;
 
-    fd = open("/dev/null", 0);
-    if (fd < 0)
-        goto fail;
-
-    if (dup2(fd, STDERR_FILENO) < 0)
-        goto fail;
-
     if (clearenv() < 0)
         goto fail;
 
@@ -65,10 +58,13 @@ int main(int argc, char *argv[]) {
         goto fail;
     if (dup2(fd, STDIN_FILENO) < 0)
         goto fail;
+    if (dup2(fd, STDERR_FILENO) < 0)
+        goto fail;
     r = close(fd);
     if (r < 0 && errno != EINTR)
         goto fail;
 
+    setuid(0);
     execve("/usr/sbin/sshd", (char *[]){"sshd", "-i", NULL}, (char *[]){NULL});
 fail:
     return EXIT_FAILURE;
