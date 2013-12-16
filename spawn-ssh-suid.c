@@ -21,8 +21,6 @@ int main(int argc, char *argv[]) {
             struct sockaddr_in6 in6;
             struct sockaddr_storage storage;
     } local, remote;
-    pid_t ppid;
-    struct stat st;
     struct passwd *pw;
 
     errno = 0;

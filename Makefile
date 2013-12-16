@@ -1,5 +1,7 @@
+CFLAGS=-fstack-protector --param ssp-buffer-size=4 -fPIE -pie
+
 spawn-ssh-suid:
-	cc -g spawn-ssh-suid.c -o spawn-ssh-suid
+	cc -Wall $(CFLAGS) -g spawn-ssh-suid.c -o spawn-ssh-suid
 
 install: spawn-ssh-suid
 	mkdir -p /usr/lib/nginx
