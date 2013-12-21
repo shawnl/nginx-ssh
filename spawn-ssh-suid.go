@@ -29,6 +29,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// doesn't work cause syscall.Sockaddr type
+	// can't be used in any way.
+	//syscall.Getsockaddr(fd)
 	e = syscall.Dup2(fd, syscall.Stdin)
 	if e != nil {
 		os.Exit(1)
