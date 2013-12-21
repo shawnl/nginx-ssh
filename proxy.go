@@ -4,7 +4,6 @@ import (
 	"os"
 	"net"
 	"io"
-	"time"
 	"fmt"
 	"bufio"
 	"bytes"
@@ -16,11 +15,6 @@ func copyAndClose(w io.Writer, r io.ReadCloser) {
 }
 
 func handleConnection(c net.Conn) {
-	err := c.SetReadDeadline(time.Unix(0, 0))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	r := bufio.NewReader(c)
 	buf, err := r.Peek(4)
 	var d net.Conn
@@ -34,11 +28,6 @@ func handleConnection(c net.Conn) {
 		c.Close()
 		return
 	}
-	err = d.SetReadDeadline(time.Unix(0, 0))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	go copyAndClose(c, d)
 	io.Copy(d, r)
 	c.Close()
@@ -47,12 +36,13 @@ func handleConnection(c net.Conn) {
 func main() {
 	ln, err := net.Listen("tcp", ":4443")
 	if err != nil {
+		fmt.Println("Listen failed: ", err)
 		os.Exit(1)
 	}
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			fmt.Println("Failed to Accept:", err)
+			fmt.Println("Accept failed: ", err)
 			continue
 		}
 		go handleConnection(conn)
