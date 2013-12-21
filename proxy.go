@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
-	"net"
-	"io"
-	"fmt"
 	"bufio"
 	"bytes"
+	"fmt"
+	"io"
+	"net"
+	"os"
 )
 
 func copyAndClose(w io.Writer, r io.ReadCloser) {
