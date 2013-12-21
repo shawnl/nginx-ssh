@@ -34,7 +34,7 @@ func handleConnection(c net.Conn) {
 }
 
 func main() {
-	ln, err := net.Listen("tcp", ":4443")
+	ln, err := net.Listen("tcp", ":443")
 	if err != nil {
 		fmt.Println("Listen failed: ", err)
 		os.Exit(1)
