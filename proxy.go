@@ -18,6 +18,10 @@ func handleConnection(c net.Conn) {
 	defer c.Close()
 	r := bufio.NewReader(c)
 	buf, err := r.Peek(4)
+	if err != nil {
+		fmt.Println(c.RemoteAddr, err)
+		return
+	}
 	var d net.Conn
 	if bytes.Equal(buf, []byte{'S', 'S', 'H', '-'}) {
 		d, err = net.Dial("tcp", "localhost:22")
