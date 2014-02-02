@@ -76,12 +76,12 @@ func main() {
 		return
 	}
 
-	_, port, err := parseHostPort(os.Args[1])
+	host, port, err := parseHostPort(os.Args[1])
 	if err != nil {
 		fmt.Println("Bad Listen host:port:", os.Args[1])
 	}
 
-	ln, err := net.Listen("tcp", fmt.Sprint(":", port))
+	ln, err := net.Listen("tcp", fmt.Sprint(host, ":", port))
 	if err != nil {
 		fmt.Println("Listen failed:", err)
 		os.Exit(1)
@@ -153,7 +153,7 @@ func main() {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			fmt.Println("Accept failed: ", err)
+			fmt.Println("Accept failed:", err)
 			continue
 		}
 		go handleConnection(conn, patterns)
