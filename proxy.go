@@ -84,7 +84,7 @@ func main() {
 		fmt.Println("Bad Listen host:port:", os.Args[1])
 	}
 
-	if bytes.Compare([]byte(host), []byte("localhost")) {
+	if bytes.Compare([]byte(host), []byte("localhost")) == 0 {
 		host = "0.0.0.0"
 	}
 
