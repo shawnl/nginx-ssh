@@ -35,18 +35,21 @@ func handleConnection(c net.Conn, patterns []matcher) {
 		fmt.Println(from, err)
 		return
 	}
+	f.Close()
 
-	for n := 0; n < len(patterns); n += 1 {
+	for n := 0;;n += 1 {
 		var host string
 		var port int
 
 		if len(patterns) == n {
 			fmt.Println(c.RemoteAddr, "Protocol not recognized")
+			return
 		}
 
 		host, port = patterns[n](buf, length)
 		if port > 0 {
 			d, err = net.Dial("tcp", fmt.Sprint(host, ":", port))
+			break
 		}
 	}
 
@@ -60,7 +63,7 @@ func handleConnection(c net.Conn, patterns []matcher) {
 
 func parseHostPort(arg string) (host string, port int, err error) {
 	if strings.Index(arg, ":") == -1 {
-		host = "0.0.0.0"
+		host = "localhost"
 		port, err = strconv.Atoi(arg)
 		return
 	}
@@ -72,13 +75,17 @@ func main() {
 	var patterns []matcher
 
 	if len(os.Args) < 2 {
-		fmt.Println("Program requires arguments")
+		fmt.Println("multiplexd [listenhost:]port [--ssl [host:]port|--ssh [host:]port|--openvpn [host:]port|--regex regex [host:]port..]")
 		return
 	}
 
 	host, port, err := parseHostPort(os.Args[1])
 	if err != nil {
 		fmt.Println("Bad Listen host:port:", os.Args[1])
+	}
+
+	if bytes.Compare([]byte(host), []byte("localhost")) {
+		host = "0.0.0.0"
 	}
 
 	ln, err := net.Listen("tcp", fmt.Sprint(host, ":", port))
@@ -124,7 +131,7 @@ func main() {
 		if bytes.Equal([]byte(os.Args[n]), []byte("--ssh")) {
 			patterns = append(patterns, (func(packet []byte, length int) (h string, p int) {
 				h = host
-				if bytes.Equal(packet, []byte("SSH-")) {
+				if bytes.Equal(packet[:4], []byte("SSH-")) {
 					p = port
 				}
 				return
